@@ -1,7 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import book from "./routes/book-routes";
-import { sequelizeTryConnection } from "./config/sequelize-config";
+import { sequelizeTryConnection } from "./config/database-config";
 
 const app = new Hono();
 

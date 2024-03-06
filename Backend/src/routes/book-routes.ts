@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import * as models from "../schema/models-export";
-import { createBook, updateBook } from "../utils/validator";
+import { createBook, updateBook } from "../utils/validators/book-validator";
 
 const book = new Hono();
 

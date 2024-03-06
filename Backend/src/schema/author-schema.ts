@@ -1,6 +1,6 @@
 import { DataTypes, Model } from "sequelize";
-import sequelize from "../config/sequelize-config";
-import Book from "./book";
+import sequelize from "../config/database-config";
+import Book from "./book-schema";
 
 class Author extends Model {}
 Author.init(

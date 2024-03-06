@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "sequelize";
-import sequelize from "../config/sequelize-config";
+import sequelize from "../config/database-config";
 
 class Book extends Model {}
 Book.init(
