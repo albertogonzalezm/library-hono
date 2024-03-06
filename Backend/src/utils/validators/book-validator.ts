@@ -3,12 +3,15 @@ import { z } from "zod";
 
 // create Book
 const createBookSchema = z.object({
-  title: z.string({ required_error: "Titulo requerido" }),
-  summary: z.string({ required_error: "Resumen requerido" }),
-  publicactionDate: z.string({ required_error: "Fecha requerida" }),
+  title: z.string({ required_error: "Title is required" }),
+  summary: z.string({ required_error: "Summary is required" }),
+  publicactionDate: z.string({
+    invalid_type_error: "Publication date must be string",
+    required_error: "Publication date is required",
+  }),
   authorId: z.number({
-    invalid_type_error: "AuthorId must be integer",
-    required_error: "Id de autor requerido",
+    invalid_type_error: "Author id must be integer",
+    required_error: "Author id is required",
   }),
 });
 
@@ -26,7 +29,7 @@ const updateBookSchema = z.object({
   summary: z.string().optional(),
   publicactionDate: z.string().optional(),
   authorId: z
-    .number({ invalid_type_error: "AuthorId must be integer" })
+    .number({ invalid_type_error: "Author id must be integer" })
     .optional(),
 });
 
