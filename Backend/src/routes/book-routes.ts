@@ -4,9 +4,8 @@ import { createBook, updateBook } from "../utils/validators/book-validator";
 
 const book = new Hono();
 
+// Create book
 book.post("/create", createBook, async (c) => {
-  await models.Author.create({ firstName: "Alberto" });
-
   const body = c.req.valid("json");
 
   try {
@@ -29,14 +28,15 @@ book.post("/create", createBook, async (c) => {
   }
 });
 
+// find book by id
 book.get("/:id", async (c) => {
   const bookId = c.req.param("id");
 
   const book = await models.Book.findByPk(bookId, {
-    include: models.Author,
     attributes: {
       exclude: ["authorId"],
     },
+    include: models.Author,
   });
 
   if (!book) {
@@ -46,13 +46,9 @@ book.get("/:id", async (c) => {
   return c.json(book, 200);
 });
 
-book.get("/", async (c) => {
-  const books = await models.Book.findAll({
-    attributes: {
-      exclude: ["authorId"],
-    },
-    include: models.Author,
-  });
+// find all books
+book.get("", async (c) => {
+  const books = await models.Book.findAll();
 
   if (books.length === 0) {
     return c.json({ message: `Books not found` }, 404);
