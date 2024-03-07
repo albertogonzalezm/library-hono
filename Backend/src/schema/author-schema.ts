@@ -1,9 +1,9 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database-config";
-import Book from "./book-schema";
+import Books from "./book-schema";
 
-class Author extends Model {}
-Author.init(
+class Authors extends Model {}
+Authors.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -21,25 +21,24 @@ Author.init(
   },
   {
     sequelize,
-    modelName: "Author",
-    tableName: "author",
+    modelName: "Authors",
     timestamps: false,
     freezeTableName: true,
   }
 );
 
-Author.hasMany(Book, {
+Authors.hasMany(Books, {
   foreignKey: {
     name: "authorId",
     allowNull: false,
   },
 });
 
-Book.belongsTo(Author, {
+Books.belongsTo(Authors, {
   foreignKey: {
     name: "authorId",
     allowNull: false,
   },
 });
 
-export default Author;
+export default Authors;

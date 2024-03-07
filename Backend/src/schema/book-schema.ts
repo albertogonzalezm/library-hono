@@ -1,8 +1,9 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database-config";
 
-class Book extends Model {}
-Book.init(
+class Books extends Model {}
+
+Books.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -23,14 +24,23 @@ Book.init(
       type: DataTypes.DATEONLY,
       allowNull: false,
     },
+    genre: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      get() {
+        return this.getDataValue("genre").split(";");
+      },
+      set(val: string[]) {
+        this.setDataValue("genre", val.join(";"));
+      },
+    },
   },
   {
     sequelize,
-    modelName: "Book",
-    tableName: "book",
+    modelName: "Books",
     timestamps: false,
     freezeTableName: true,
   }
 );
 
-export default Book;
+export default Books;

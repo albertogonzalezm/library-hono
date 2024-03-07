@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { createAuthor } from "../utils/validators/author-validator";
-import * as models from "../schema/models-export";
+import * as models from "../schema/export-schemas";
 import { Op } from "sequelize";
 
 const author = new Hono();
@@ -8,7 +8,7 @@ const author = new Hono();
 // Create author
 author.post("/create", createAuthor, async (c) => {
   const { firstName, lastName } = c.req.valid("json");
-  const authorSaved = await models.Author.create({ firstName, lastName });
+  const authorSaved = await models.Authors.create({ firstName, lastName });
 
   return c.json(authorSaved, 201);
 });
@@ -17,10 +17,10 @@ author.post("/create", createAuthor, async (c) => {
 author.get("/:id", async (c) => {
   const authorId = c.req.param("id");
 
-  const author = await models.Author.findByPk(authorId, {
+  const author = await models.Authors.findByPk(authorId, {
     include: [
       {
-        model: models.Book,
+        model: models.Books,
         attributes: { exclude: ["authorId"] },
       },
     ],
@@ -39,7 +39,7 @@ author.get("", async (c, next) => {
 
   if (!search) await next();
 
-  const authors = await models.Author.findAll({
+  const authors = await models.Authors.findAll({
     where: {
       [Op.or]: [
         {
@@ -64,9 +64,9 @@ author.get("", async (c, next) => {
 // find all authors
 author.get("", async (c) => {
   let offset = c.req.query("offset");
-  if (!offset || isNaN(offset)) offset = "0";
+  if (!offset || isNaN(+offset)) offset = "0";
 
-  const authors = await models.Author.findAll({ limit: 15, offset: +offset });
+  const authors = await models.Authors.findAll({ limit: 15, offset: +offset });
 
   if (authors.length === 0) {
     return c.json({ message: `Authors not found` }, 404);

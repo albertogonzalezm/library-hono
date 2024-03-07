@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import * as models from "../schema/models-export";
+import * as models from "../schema/export-schemas";
 import { createBook, updateBook } from "../utils/validators/book-validator";
 
 const book = new Hono();
@@ -10,7 +10,7 @@ book.post("/create", createBook, async (c) => {
 
   try {
     const book = { ...body, publicactionDate: new Date(body.publicactionDate) };
-    const bookSaved = await models.Book.create(book);
+    const bookSaved = await models.Books.create(book);
 
     return c.json(bookSaved, 201);
   } catch (error: any) {
@@ -32,11 +32,11 @@ book.post("/create", createBook, async (c) => {
 book.get("/:id", async (c) => {
   const bookId = c.req.param("id");
 
-  const book = await models.Book.findByPk(bookId, {
+  const book = await models.Books.findByPk(bookId, {
     attributes: {
       exclude: ["authorId"],
     },
-    include: models.Author,
+    include: models.Authors,
   });
 
   if (!book) {
@@ -48,7 +48,7 @@ book.get("/:id", async (c) => {
 
 // find all books
 book.get("", async (c) => {
-  const books = await models.Book.findAll();
+  const books = await models.Books.findAll();
 
   if (books.length === 0) {
     return c.json({ message: `Books not found` }, 404);
