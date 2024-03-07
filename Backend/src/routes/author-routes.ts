@@ -33,28 +33,37 @@ author.get("/:id", async (c) => {
   return c.json(author, 201);
 });
 
-// Find author by name
+// Find author by name and find all
 author.get("", async (c, next) => {
   const search = c.req.query("search");
+  let offset = c.req.query("offset");
+  let authors;
 
-  if (!search) await next();
+  if (!offset || isNaN(+offset)) offset = "0";
+  // if (!search) await next();
 
-  const authors = await models.Authors.findAll({
-    where: {
-      [Op.or]: [
-        {
-          firstName: { [Op.like]: `%${search}%` },
-        },
-        {
-          lastName: { [Op.like]: `%${search}%` },
-        },
-      ],
-    },
-    limit: 15,
-    offset: 0,
-  });
+  if (!search) {
+    authors = await models.Authors.findAll({ limit: 15, offset: +offset });
+  } else {
+    authors = await models.Authors.findAll({
+      where: {
+        [Op.or]: [
+          {
+            firstName: { [Op.like]: `%${search}%` },
+          },
+          {
+            lastName: { [Op.like]: `%${search}%` },
+          },
+        ],
+      },
+      limit: 15,
+      offset: +offset,
+    });
+  }
 
-  if (authors.length === 0) {
+  if (authors.length === 0 && !search) {
+    return c.json({ message: `Authors not found` }, 404);
+  } else if (authors.length === 0 && search) {
     return c.json({ message: `Author/s with name=${search} not found` }, 404);
   }
 
@@ -62,7 +71,7 @@ author.get("", async (c, next) => {
 });
 
 // find all authors
-author.get("", async (c) => {
+/* author.get("", async (c) => {
   let offset = c.req.query("offset");
   if (!offset || isNaN(+offset)) offset = "0";
 
@@ -73,6 +82,6 @@ author.get("", async (c) => {
   }
 
   return c.json(authors, 200);
-});
+}); */
 
 export default author;
