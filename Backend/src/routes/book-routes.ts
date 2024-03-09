@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import * as models from "../schema/export-schemas";
 import { createBook, updateBook } from "../utils/validators/book-validator";
+import { Op } from "sequelize";
 
 const book = new Hono();
 
@@ -9,8 +10,30 @@ book.post("/create", createBook, async (c) => {
   const body = c.req.valid("json");
 
   try {
-    const book = { ...body, publicactionDate: new Date(body.publicactionDate) };
-    const bookSaved = await models.Books.create(book);
+    const book = {
+      ...body,
+      publicactionDate: new Date(body.publicactionDate),
+      genresId: [...new Set(body.genresId.sort())],
+    };
+
+    const genres = await models.Genre.findAll({
+      where: {
+        id: {
+          [Op.in]: book.genresId,
+        },
+      },
+    });
+
+    // const genresFound = genres.filter(elem=>book.genresId.includes());
+
+    if (book.genresId.length === 0)
+      return c.json({ message: "You must provide genres" }, 400);
+
+    if (genres.length != book.genresId.length) return c.json({}, 404);
+
+    const bookSaved = await models.Book.create(book);
+
+    bookSaved.addGenres(genres);
 
     return c.json(bookSaved, 201);
   } catch (error: any) {
@@ -32,11 +55,19 @@ book.post("/create", createBook, async (c) => {
 book.get("/:id", async (c) => {
   const bookId = c.req.param("id");
 
-  const book = await models.Books.findByPk(bookId, {
+  const book = await models.Book.findByPk(bookId, {
     attributes: {
       exclude: ["authorId"],
     },
-    include: models.Authors,
+    include: [
+      {
+        model: models.Author,
+      },
+      {
+        model: models.Genre,
+        through: { attributes: [] },
+      },
+    ],
   });
 
   if (!book) {
@@ -48,7 +79,7 @@ book.get("/:id", async (c) => {
 
 // find all books
 book.get("", async (c) => {
-  const books = await models.Books.findAll();
+  const books = await models.Book.findAll();
 
   if (books.length === 0) {
     return c.json({ message: `Books not found` }, 404);

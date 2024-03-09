@@ -10,16 +10,21 @@ const sequelize = new Sequelize(
   }
 );
 
-export async function sequelizeTryConnection() {
+export async function sequelizeSync() {
+  try {
+    await sequelize.sync({ force: true });
+    console.log("\nAll models were synchronized successfully.\n");
+  } catch (error) {
+    console.error("\nsynchronization was unsuccessful\n", error);
+  }
+}
+
+export async function sequelizeAutenticate() {
   try {
     await sequelize.authenticate();
-    console.log(
-      "\nConnection at database has been established successfully.\n"
-    );
-    await sequelize.sync({ force: true });
-    console.log("\nThe models were created!\n");
+    console.log("\nConnection has been established successfully.\n");
   } catch (error) {
-    console.error("Unable to connect to the database:", error);
+    console.error("\nUnable to connect to the database:\n", error);
   }
 }
 

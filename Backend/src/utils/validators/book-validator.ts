@@ -9,7 +9,7 @@ const createBookValidator = z.object({
     invalid_type_error: "Publication date must be string",
     required_error: "Publication date is required",
   }),
-  genre: z.array(z.string(), {
+  genresId: z.array(z.number(), {
     invalid_type_error: "Must provide an array",
     required_error: "Genre is required",
   }),
@@ -24,8 +24,8 @@ const updateBookValidator = z.object({
   title: z.string().optional(),
   summary: z.string().optional(),
   publicactionDate: z.string().optional(),
-  genre: z
-    .array(z.string(), {
+  genresId: z
+    .array(z.number(), {
       invalid_type_error: "Must provide an array",
       required_error: "Genre is required",
     })
@@ -35,18 +35,26 @@ const updateBookValidator = z.object({
     .optional(),
 });
 
-export const createBook = zValidator("json", createBookValidator, (result, c) => {
-  if (!result.success) {
-    const error: [] = JSON.parse(result.error.message);
-    const { message } = error[error.length - 1];
-    return c.json({ message }, 400);
+export const createBook = zValidator(
+  "json",
+  createBookValidator,
+  (result, c) => {
+    if (!result.success) {
+      const error: [] = JSON.parse(result.error.message);
+      const { message } = error[error.length - 1];
+      return c.json({ message }, 400);
+    }
   }
-});
+);
 
-export const updateBook = zValidator("json", updateBookValidator, (result, c) => {
-  if (!result.success) {
-    const error: [] = JSON.parse(result.error.message);
-    const { message } = error[error.length - 1];
-    return c.json({ message }, 400);
+export const updateBook = zValidator(
+  "json",
+  updateBookValidator,
+  (result, c) => {
+    if (!result.success) {
+      const error: [] = JSON.parse(result.error.message);
+      const { message } = error[error.length - 1];
+      return c.json({ message }, 400);
+    }
   }
-});
+);

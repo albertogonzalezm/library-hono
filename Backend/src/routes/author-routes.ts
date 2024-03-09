@@ -8,7 +8,7 @@ const author = new Hono();
 // Create author
 author.post("/create", createAuthor, async (c) => {
   const { firstName, lastName } = c.req.valid("json");
-  const authorSaved = await models.Authors.create({ firstName, lastName });
+  const authorSaved = await models.Author.create({ firstName, lastName });
 
   return c.json(authorSaved, 201);
 });
@@ -17,10 +17,10 @@ author.post("/create", createAuthor, async (c) => {
 author.get("/:id", async (c) => {
   const authorId = c.req.param("id");
 
-  const author = await models.Authors.findByPk(authorId, {
+  const author = await models.Author.findByPk(authorId, {
     include: [
       {
-        model: models.Books,
+        model: models.Book,
         attributes: { exclude: ["authorId"] },
       },
     ],
@@ -43,9 +43,9 @@ author.get("", async (c, next) => {
   // if (!search) await next();
 
   if (!search) {
-    authors = await models.Authors.findAll({ limit: 15, offset: +offset });
+    authors = await models.Author.findAll({ limit: 15, offset: +offset });
   } else {
-    authors = await models.Authors.findAll({
+    authors = await models.Author.findAll({
       where: {
         [Op.or]: [
           {
