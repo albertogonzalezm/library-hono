@@ -1,11 +1,16 @@
 import { Sequelize } from "sequelize";
 
+const database = process.env.MYSQL_DB;
+const user = process.env.MYSQL_USER;
+const passwd = process.env.MYSQL_PASSWD;
+const host = process.env.MYSQL_HOST;
+
 const sequelize = new Sequelize(
-  "libraryhono", // database
-  "root", // user
-  "1234", // password
+  database, // database
+  user, // user
+  passwd, // password
   {
-    host: "localhost",
+    host,
     dialect: "mysql",
   }
 );
